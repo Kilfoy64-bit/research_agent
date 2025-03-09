@@ -2,7 +2,7 @@
 State management for the research agent.
 """
 
-from typing import List, Any
+from typing import List, Any, Optional
 
 from langgraph.graph import MessagesState
 
@@ -13,3 +13,4 @@ class AgentState(MessagesState):
     messages: List[Any]
     research_steps: List[str] = []
     sources: List[str] = []
+    formatted_report: Optional[str] = None

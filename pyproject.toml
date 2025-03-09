@@ -13,6 +13,8 @@ license = {text = "MIT"}
 dependencies = [
     "langchain-core>=0.1.0",
     "langgraph>=0.0.18",
+    "langgraph-cli[inmem]>=0.1.75",
+    "typing-extensions",
     "dotenv",
     "python-dotenv",
     "langchain-openai>=0.0.1",

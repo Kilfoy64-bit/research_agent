@@ -17,8 +17,13 @@ logger = logging.getLogger(__name__)
 class WebSearchNode:
     """Node that runs web searches."""
 
-    def __init__(self, web_search_tool: Optional[Any] = None):
-        self.web_search_tool = web_search_tool or WebSearchTool()
+    def __init__(self):
+        """Initialize the web search node.
+
+        Args:
+            llm_with_tools: LLM with tools (not used for search, only for reference)
+        """
+        self.web_search_tool = WebSearchTool()
 
     def __call__(self, state: AgentState) -> AgentState:
         """Run the web search tool.

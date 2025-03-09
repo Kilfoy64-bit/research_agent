@@ -5,7 +5,7 @@ import logging
 import sys
 from dotenv import load_dotenv
 
-from src.agent.graph import run_agent
+from src.agent.runner import run_agent
 from src.utils.logging import configure_logging, get_logger, get_log_level_from_env
 
 
