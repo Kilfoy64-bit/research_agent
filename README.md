@@ -87,6 +87,37 @@ For more information about the available options:
 python -m src.main --help
 ```
 
+## Logging
+
+The research agent uses Python's standard logging facility to provide detailed logs. You can configure the logging level through several methods:
+
+### Environment Variable
+
+Set the `LOG_LEVEL` environment variable in your `.env` file:
+
+```
+LOG_LEVEL=DEBUG
+```
+
+Valid log levels (in increasing order of severity):
+- `DEBUG`: Detailed debugging information
+- `INFO`: Confirmation that things are working as expected (default)
+- `WARNING`: Indication of potential issues
+- `ERROR`: Errors that allow the application to continue
+- `CRITICAL`: Critical errors that may prevent the application from running
+
+### Command Line Option
+
+You can also set the log level when running the agent:
+
+```bash
+python -m src.main --log-level DEBUG "What are the latest advancements in quantum computing?"
+```
+
+### Log Output
+
+By default, logs are output to the console (stderr). The logging configuration can be extended to write to files by modifying the `configure_logging` function in `src/utils/logging.py`.
+
 ## Extending the Agent
 
 ### Adding New Tools

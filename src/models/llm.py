@@ -16,6 +16,11 @@ except ImportError:
 from langchain_core.messages import AIMessage
 from langchain_core.tools import BaseTool
 
+from src.utils.logging import get_logger
+
+# Get logger for this module
+logger = get_logger(__name__)
+
 
 def get_mock_response() -> AIMessage:
     """Get a mock response for testing purposes.
@@ -29,6 +34,7 @@ def get_mock_response() -> AIMessage:
 
     if get_mock_response.call_count == 0:
         # First call - simulate a tool call
+        logger.debug("Returning mock tool call response")
         response = AIMessage(
             content="I'll search for that information.",
             tool_calls=[
@@ -41,6 +47,7 @@ def get_mock_response() -> AIMessage:
         )
     else:
         # Second call - simulate a final answer
+        logger.debug("Returning mock final answer response")
         response = AIMessage(
             content=(
                 "Based on the search results, here's what I found: Research agents are AI systems "
@@ -66,7 +73,7 @@ def setup_llm(tools: List[BaseTool]) -> Optional[Any]:
     # Set up the LLM - either use OpenAI if available or a mock function
     api_key = os.getenv("OPENAI_API_KEY", "")
     if OPENAI_AVAILABLE and api_key and api_key != "your_openai_api_key_here":
-        print("Using OpenAI for LLM")
+        logger.info("Using OpenAI for LLM")
         llm = ChatOpenAI(
             model="gpt-3.5-turbo-0125",
             temperature=0.3,
@@ -74,6 +81,6 @@ def setup_llm(tools: List[BaseTool]) -> Optional[Any]:
         # Add tool calling capabilities
         return llm.bind_tools(tools)
     else:
-        print("Using mock responses for testing (no valid API key found)")
+        logger.info("Using mock responses for testing (no valid API key found)")
         # We'll use a custom function since FakeListLLM doesn't work well with tool calls
         return None  # Not used in this case, will use mock responses

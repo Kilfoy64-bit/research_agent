@@ -16,6 +16,10 @@ from src.agent.nodes import (
     run_web_search,
     final_answer,
 )
+from src.utils.logging import get_logger
+
+# Get logger for this module
+logger = get_logger(__name__)
 
 
 def build_research_agent(llm_with_tools: Any = None) -> StateGraph:
@@ -27,6 +31,7 @@ def build_research_agent(llm_with_tools: Any = None) -> StateGraph:
     Returns:
         The compiled state graph for the research agent
     """
+    logger.debug("Building research agent graph")
     workflow = StateGraph(AgentState)
 
     # Create a node builder that includes the llm
@@ -50,6 +55,7 @@ def build_research_agent(llm_with_tools: Any = None) -> StateGraph:
     # Add edge from final_answer to END
     workflow.add_edge("final_answer", END)
 
+    logger.debug("Compiling research agent graph")
     # Compile the graph
     return workflow.compile()
 
@@ -63,6 +69,7 @@ def format_research_report(state: AgentState) -> str:
     Returns:
         A formatted research report as a string
     """
+    logger.debug("Formatting research report")
     messages = state["messages"]
     final_message = messages[-1].content if messages else "No results"
 
@@ -85,6 +92,7 @@ RESEARCH STEPS:
 SOURCES:
 {sources_formatted}
 """
+    logger.debug("Research report generated with %d characters", len(report))
     return report
 
 
@@ -97,18 +105,23 @@ def run_agent(query: str) -> str:
     Returns:
         A formatted research report
     """
+    logger.info("Running research agent with query: %s", query)
+    
     # Setup tools and LLM
     tools = [WebSearchTool()]
     llm_with_tools = setup_llm(tools)
 
     # Reset the mock response counter when starting a new run if using mocks
     if not llm_with_tools:
+        logger.debug("Resetting mock response counter")
         get_mock_response.call_count = 0
 
     # Build the agent
+    logger.debug("Building research agent")
     agent = build_research_agent(llm_with_tools)
 
     # Initial state
+    logger.debug("Initializing agent state")
     initial_state = {
         "messages": [HumanMessage(content=query)],
         "research_steps": [],
@@ -116,7 +129,9 @@ def run_agent(query: str) -> str:
     }
 
     # Run the agent
+    logger.info("Invoking research agent")
     result = agent.invoke(initial_state)
+    logger.info("Research agent execution completed")
 
     # Format the report
     return format_research_report(result)
