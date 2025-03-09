@@ -9,7 +9,7 @@ from langgraph.graph import StateGraph, END
 
 from src.state.state import AgentState
 from src.tools.web_search import WebSearchTool
-from src.models.llm import setup_llm, get_mock_response
+from src.models.llm import setup_llm
 from src.agent.nodes import (
     call_model,
     route_to_tool_or_end,
@@ -106,16 +106,10 @@ def run_agent(query: str) -> str:
         A formatted research report
     """
     logger.info("Running research agent with query: %s", query)
-    
+
     # Setup tools and LLM
     tools = [WebSearchTool()]
     llm_with_tools = setup_llm(tools)
-
-    # Reset the mock response counter when starting a new run if using mocks
-    if not llm_with_tools:
-        logger.debug("Resetting mock response counter")
-        get_mock_response.call_count = 0
-
     # Build the agent
     logger.debug("Building research agent")
     agent = build_research_agent(llm_with_tools)

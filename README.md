@@ -37,17 +37,11 @@ source .venv/bin/activate
 
 3. Install dependencies:
 ```bash
-# Install the project with main dependencies
+# Install the project with all dependencies
 uv pip install -e .
-
-# Install with OpenAI support
-uv pip install ".[openai]"
 
 # Install with development tools
 uv pip install ".[dev]"
-
-# Install with both OpenAI and development dependencies
-uv pip install ".[openai,dev]"
 ```
 
 4. Create a `.env` file with your OpenAI API key:

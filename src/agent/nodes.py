@@ -8,7 +8,6 @@ from langchain_core.messages import ToolMessage
 
 from src.state.state import AgentState
 from src.tools.web_search import WebSearchTool
-from src.models.llm import get_mock_response
 from src.utils.logging import get_logger
 
 # Get logger for this module
@@ -28,14 +27,8 @@ def call_model(state: AgentState, llm_with_tools: Any = None) -> AgentState:
     messages = state["messages"]
     logger.debug("Calling model with %d messages", len(messages))
 
-    # Use the real LLM if available, otherwise use mock responses
-    if llm_with_tools:
-        logger.debug("Using real LLM")
-        response = llm_with_tools.invoke(messages)
-    else:
-        # Get a mock response
-        logger.debug("Using mock response")
-        response = get_mock_response()
+    logger.debug("Using real LLM")
+    response = llm_with_tools.invoke(messages)
 
     logger.debug("Model response received")
     return {"messages": messages + [response]}

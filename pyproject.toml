@@ -15,10 +15,10 @@ dependencies = [
     "langgraph>=0.0.18",
     "dotenv",
     "python-dotenv",
+    "langchain-openai>=0.0.1",
 ]
 
 [project.optional-dependencies]
-openai = ["langchain-openai>=0.0.1"]
 dev = [
     "mypy",
     "pytest",

@@ -1,27 +1,32 @@
 #!/usr/bin/env python3
-"""
-Main entry point for the research agent application.
-This implements a modular LangGraph-based research agent.
-"""
 import os
 import argparse
 import logging
+import sys
 from dotenv import load_dotenv
 
 from src.agent.graph import run_agent
 from src.utils.logging import configure_logging, get_logger, get_log_level_from_env
 
-# Configure logging
-configure_logging(log_level=get_log_level_from_env())
-# Get logger for this module
-logger = get_logger(__name__)
-
-# Load environment variables
-load_dotenv()
-
 
 def main() -> None:
     """Main entry point for the research agent."""
+    # Load environment variables with explicit path and override
+    env_path = os.path.join(os.getcwd(), ".env")
+    if not os.path.exists(env_path):
+        print(f"Error: .env file not found at {env_path}")
+        print("Please create a .env file with your API keys.")
+        sys.exit(1)
+
+    load_dotenv(env_path, override=True)
+
+    # Verify OpenAI API key is set
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        print("Error: OPENAI_API_KEY environment variable not set in .env file.")
+        print("Please add your OpenAI API key to the .env file.")
+        sys.exit(1)
+
     # Set up argument parser
     parser = argparse.ArgumentParser(
         description="Research Agent - A modular LangGraph-based research agent"
@@ -41,6 +46,9 @@ def main() -> None:
 
     # Configure logging with command line arguments
     configure_logging(log_level=args.log_level)
+
+    # Get logger for this module
+    logger = get_logger(__name__)
 
     if args.interactive or args.query is None:
         # Interactive mode
