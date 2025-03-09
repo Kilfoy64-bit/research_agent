@@ -48,3 +48,5 @@ logs/
 data/
 *.log
 research_results/
+.langgraph_api/
+studio/.langgraph_api/
