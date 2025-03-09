@@ -1,13 +1,49 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "research-agent"
+name = "research_agent"
 version = "0.1.0"
-description = "Add your description here"
+description = "A LangGraph-based research agent"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+
 dependencies = [
-    "langchain>=0.3.20",
-    "langgraph>=0.3.5",
-    "pydantic>=2.10.6",
-    "python-dotenv>=1.0.1",
-    "requests>=2.32.3",
+    "langchain-core>=0.1.0",
+    "langgraph>=0.0.18",
+    "dotenv",
+    "python-dotenv",
 ]
+
+[project.optional-dependencies]
+openai = ["langchain-openai>=0.0.1"]
+dev = [
+    "mypy",
+    "pytest",
+    "black",
+    "ruff",
+]
+
+[tool.setuptools]
+packages = ["src"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+select = ["E", "F", "I", "W"]
+ignore = []
+
+[tool.mypy]
+python_version = "3.9"
+check_untyped_defs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true

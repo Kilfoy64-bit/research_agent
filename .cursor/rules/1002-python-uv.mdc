@@ -1,0 +1,129 @@
+---
+description: ALWAYS use UV for Python dependency and environment management instead of pip/virtualenv/pyenv
+globs: **/*.py, pyproject.toml, requirements.txt
+alwaysApply: false
+---
+---
+description: ALWAYS use UV for Python dependency and environment management instead of pip/virtualenv/pyenv
+globs: **/*.py, pyproject.toml, requirements.txt
+---
+
+# UV Usage for Python Projects
+
+<version>1.1.0</version>
+
+## Context
+- When working on Python projects that use the UV tool
+- When installing packages, creating virtual environments, or managing Python versions
+- When running Python tools (linters, formatters, etc.)
+
+## Requirements
+
+### Virtual Environment Management
+- Always create and use virtual environments with UV
+- Never use raw `python -m venv` or other virtualenv tools
+
+### Package Management
+- Use `uv pip install` for installing packages
+- Use `uv pip install -e .` for editable installs of your project
+- Use `uv pip install ".[group]"` to install optional dependency groups
+- Never use raw `pip install` commands which might install globally
+
+### Python Version Management
+- Use UV's Python version management instead of pyenv
+- Specify Python versions with UV when needed
+
+### Tool Management
+- Install developer tools (linters, formatters) via UV
+- Use `uvx` for one-off tool executions
+
+## Command Usage
+
+### Virtual Environment Creation
+<example>
+# Create default virtual environment
+uv venv
+
+# Create environment with specific Python version
+uv venv my_env --python 3.9
+</example>
+
+<example type="invalid">
+# Never use these alternatives
+python -m venv .venv
+virtualenv .venv
+</example>
+
+### Package Installation
+<example>
+# Install a single package
+uv add requests
+
+# Install package with specific version
+uv add "fastapi>=0.95.0"
+
+# Install package in a specific group
+uv add --group dev pytest black
+
+# Install current project in editable mode
+uv pip install -e .
+
+# Install with optional dependencies
+uv pip install ".[dev]"
+uv pip install ".[openai,dev]"
+
+# Install from requirements file
+uv pip install -r requirements.txt
+
+# Install from pyproject.toml
+uv pip install -r pyproject.toml
+</example>
+
+<example type="invalid">
+# Never use pip directly
+pip install requests
+python -m pip install fastapi
+
+# Don't use -e with uv add
+uv add -e .
+</example>
+
+### Python Version Management
+<example>
+# Install and use specific Python versions
+uv python install 3.9
+uv run --python 3.9 app.py
+uv python pin 3.9
+</example>
+
+<example type="invalid">
+# Don't use pyenv
+pyenv install 3.9
+pyenv local 3.9
+</example>
+
+### Running Tools
+<example>
+# Install tools with UV
+uv tool install black
+uv add --group dev ruff
+
+# Run tools without installation
+uvx black my_file.py
+</example>
+
+<example type="invalid">
+# Don't install globally with pip
+pip install black
+python -m pip install ruff
+</example>
+
+## Decision Chart for UV Commands
+
+1. Installing a package? → `uv add [package]`
+2. Installing specific group? → `uv add --group [group] [package]` 
+3. Installing your project? → `uv pip install -e .`
+4. Installing with optional deps? → `uv pip install ".[group1,group2]"`
+5. Creating environment? → `uv venv`
+6. Running a tool once? → `uvx [tool] [args]`
+7. Installing a global tool? 

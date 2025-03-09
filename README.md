@@ -1,83 +1,103 @@
 # Research Agent
 
-A general purpose research agent built with LangChain and LangGraph to help with information gathering, summarization, and analysis.
-
-## Features
-
-- Web search capabilities using Tavily API
-- Scientific literature search with ArXiv
-- Memory-based conversation history
-- Advanced research workflow with LangGraph
-- Modular and extensible architecture
-
-## Getting Started
-
-### Prerequisites
-
-- Python 3.11+
-- UV package manager (recommended) or pip
-
-### Installation
-
-1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/research_agent.git
-   cd research_agent
-   ```
-
-2. Set up environment with UV:
-   ```
-   uv venv
-   uv pip install -e .
-   ```
-
-3. Create a `.env` file in the root directory and add your API keys:
-   ```
-   OPENAI_API_KEY=your_openai_api_key_here
-   TAVILY_API_KEY=your_tavily_api_key_here
-   ```
-
-### Usage
-
-Run the research agent:
-
-```
-python main.py
-```
-
-This will start an interactive console where you can ask research questions.
+A modular LangGraph-based research agent.
 
 ## Project Structure
 
+The project is organized into several modules:
+
 ```
-research_agent/
-├── .env                # Environment variables (not in version control)
-├── .gitignore          # Git ignore file
-├── main.py             # Main entry point
-├── pyproject.toml      # Project metadata and dependencies
-├── README.md           # Project documentation
-├── src/                # Source code
-│   └── research_agent/ # Main package
-│       ├── __init__.py # Package initialization
-│       ├── agent.py    # Agent implementation
-│       └── tools/      # Custom tools for the agent
+src/
+├── agent/           # Agent-specific code
+│   ├── graph.py     # Agent graph configuration and execution
+│   └── nodes.py     # Graph node implementations
+├── models/          # LLM configuration
+│   └── llm.py       # LLM setup and mock implementations
+├── state/           # State management
+│   └── state.py     # Agent state definition
+├── tools/           # Tools used by the agent
+│   └── web_search.py # Web search tool implementation
+└── main.py          # Main entry point
 ```
+
+## Setup
+
+1. Create a virtual environment:
+```bash
+uv venv
+```
+
+2. Activate the virtual environment:
+```bash
+# On Windows
+.venv\Scripts\activate
+# On Unix or MacOS
+source .venv/bin/activate
+```
+
+3. Install dependencies:
+```bash
+# Install the project with main dependencies
+uv pip install -e .
+
+# Install with OpenAI support
+uv pip install ".[openai]"
+
+# Install with development tools
+uv pip install ".[dev]"
+
+# Install with both OpenAI and development dependencies
+uv pip install ".[openai,dev]"
+```
+
+4. Create a `.env` file with your OpenAI API key:
+```
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+## Usage
+
+Run the agent from the command line:
+
+```bash
+python -m src.main
+```
+
+## Extending the Agent
+
+### Adding New Tools
+
+1. Create a new tool in the `tools` directory
+2. Import and add the tool to the tools list in `agent/graph.py`
+3. Add a new node function in `agent/nodes.py` to handle the tool
+4. Update the routing in `agent/nodes.py` to route to your new tool
+
+### Modifying the Agent Graph
+
+To modify the agent's workflow, edit the `build_research_agent` function in `agent/graph.py`.
 
 ## Development
 
-This project uses UV for dependency management. To add new dependencies:
+Install development dependencies:
 
+```bash
+uv pip install ".[dev]"
 ```
-uv pip install package_name
+
+Run tests:
+
+```bash
+pytest
 ```
 
-Then update `pyproject.toml` to include the new dependency.
+Format code:
 
-## License
+```bash
+black src
+```
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Run linter:
 
-## Acknowledgements
-
-- [LangChain](https://github.com/langchain-ai/langchain) for the LLM framework
-- [LangGraph](https://github.com/langchain-ai/langgraph) for stateful agent workflow capabilities
+```bash
+ruff check src
+```

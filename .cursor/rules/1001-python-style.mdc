@@ -1,0 +1,167 @@
+---
+description: ALWAYS follow these Python code style guidelines when writing or modifying Python code
+globs: **/*.py
+alwaysApply: false
+---
+---
+description: ALWAYS follow these Python code style guidelines when writing or modifying Python code
+globs: "**/*.py"
+---
+
+# Python Code Style
+
+<version>1.0.0</version>
+
+## Context
+- Apply when writing or modifying Python code
+- Ensures consistent, readable, and maintainable code structure
+
+## Requirements
+
+### Imports
+- Group imports in this order with a blank line between groups:
+  1. Standard library imports (alphabetically sorted)
+  2. Third-party library imports (alphabetically sorted)
+  3. Local/project imports (alphabetically sorted)
+- Type annotations from `typing` module should be imported at the top
+
+### Type Annotations
+- Always use type hints for function parameters and return types
+- Use appropriate typing constructs for complex types (List, Dict, Optional, Union, etc.)
+- Use AsyncIterator for async generators
+- Annotate all class attributes and variables where appropriate
+
+### Function Definitions
+- Use clear, descriptive names in snake_case
+- Include docstrings for complex functions
+- Separate function definitions with blank lines
+- Use async functions with proper typing when dealing with asynchronous operations
+
+### Error Handling
+- Use specific exception types when possible
+- Include appropriate error logging in except blocks
+- Handle exceptions at the appropriate level
+
+### Logging
+- Initialize logger at module level: `logger = logging.getLogger(__name__)`
+- Use appropriate log levels (debug, info, warning, error, critical)
+- Include contextual information in log messages
+
+### Testing
+- Use pytest for test framework
+- Create descriptive test function names that explain what's being tested
+- Use fixtures for test setup and teardown
+- Group tests by functionality
+- Mock external dependencies
+- Test both success and error paths
+- Add docstrings to test functions explaining their purpose
+
+### Code Structure
+- Use 4 spaces for indentation (no tabs)
+- Maximum line length of 88 characters (compatible with black formatter)
+- Use blank lines to separate logical sections
+- Use meaningful variable names
+
+## Examples
+
+<example>
+# Good import organization
+import logging
+import time
+from typing import AsyncIterator, Dict, List, Optional
+
+from external_lib import SomeClass
+from third_party_lib import function_a
+from third_party_lib.submodule import ClassB
+
+from myproject.module import MyClass
+from myproject.utils import helper_function
+
+
+logger = logging.getLogger(__name__)
+
+
+async def process_data(input_data: Dict[str, Any], limit: Optional[int] = None) -> List[str]:
+    """
+    Process the input data and return a list of results.
+    
+    Args:
+        input_data: Dictionary containing input data
+        limit: Optional maximum number of results
+        
+    Returns:
+        List of processed string results
+    """
+    try:
+        results = []
+        for key, value in input_data.items():
+            result = await helper_function(key, value)
+            results.append(result)
+            if limit and len(results) >= limit:
+                break
+        return results
+    except Exception as e:
+        logger.error(f"Error processing data: {e}")
+        raise
+</example>
+
+<example type="invalid">
+# Poor import organization and missing type hints
+import time
+from myproject.utils import helper_function
+import logging
+from third_party_lib import function_a
+from typing import Dict
+
+logger = logging.getLogger(__name__)
+
+async def process_data(input_data, limit = None):
+    results = []
+    for key, value in input_data.items():
+        result = await helper_function(key, value)
+        results.append(result)
+        if limit and len(results) >= limit:
+            break
+    return results
+</example>
+
+<example>
+# Good test structure
+import pytest
+from unittest.mock import MagicMock, patch
+
+from myproject.service import process_data
+
+
+@pytest.fixture
+def mock_data():
+    return {"key1": "value1", "key2": "value2"}
+
+
+@pytest.fixture
+def mock_helper():
+    helper = MagicMock()
+    helper.return_value = "processed_result"
+    return helper
+
+
+@pytest.mark.asyncio
+async def test_process_data_success(mock_data, mock_helper):
+    """Test that process_data successfully processes all input data items."""
+    with patch("myproject.utils.helper_function", mock_helper):
+        results = await process_data(mock_data)
+        
+        assert len(results) == 2
+        assert "processed_result" in results
+        assert mock_helper.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_process_data_with_limit(mock_data, mock_helper):
+    """Test that process_data respects the limit parameter."""
+    with patch("myproject.utils.helper_function", mock_helper):
+        results = await process_data(mock_data, limit=1)
+        
+        assert len(results) == 1
+        assert mock_helper.call_count == 1
+</example> 
