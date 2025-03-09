@@ -57,10 +57,34 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 ## Usage
 
-Run the agent from the command line:
+You can run the research agent in two different modes:
+
+### Command Line Mode
+
+Pass your research query directly as a command line argument:
 
 ```bash
+python -m src.main "What are the latest advancements in quantum computing?"
+```
+
+### Interactive Mode
+
+If you prefer an interactive prompt, use the `-i` or `--interactive` flag, or simply run without any arguments:
+
+```bash
+# Run with interactive flag
+python -m src.main -i
+
+# Or simply run without arguments to enter interactive mode
 python -m src.main
+```
+
+### Help
+
+For more information about the available options:
+
+```bash
+python -m src.main --help
 ```
 
 ## Extending the Agent
