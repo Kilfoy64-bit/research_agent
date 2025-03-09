@@ -55,9 +55,9 @@ class AgentConfig:
 
     # Model settings - default all to OpenAI
     planner_provider: ModelProvider = ModelProvider.OPENAI
-    planner_model: str = "gpt-3.5-turbo"
+    planner_model: str = "gpt-4o"  # Upgraded from gpt-3.5-turbo to gpt-4o
     report_writer_provider: ModelProvider = ModelProvider.OPENAI
-    report_writer_model: str = "gpt-4"  # Using gpt-4 for better report writing
+    report_writer_model: str = "gpt-4-turbo"  # Upgraded from gpt-4 to gpt-4-turbo
 
     # Environment variables mapping
     env_vars: ClassVar[Dict[str, str]] = {
