@@ -10,12 +10,8 @@ from langgraph.graph import StateGraph, END
 from src.state.state import AgentState
 from src.tools.web_search import WebSearchTool
 from src.models.llm import setup_llm
-from src.agent.nodes import (
-    call_model,
-    route_to_tool_or_end,
-    run_web_search,
-    final_answer,
-)
+from src.agent.nodes import PlannerNode, WebSearchNode, FinalAnswerNode
+from src.agent.edges import route_to_tool_or_end
 from src.utils.logging import get_logger
 
 # Get logger for this module
@@ -32,32 +28,28 @@ def build_research_agent(llm_with_tools: Any = None) -> StateGraph:
         The compiled state graph for the research agent
     """
     logger.debug("Building research agent graph")
-    workflow = StateGraph(AgentState)
-
-    # Create a node builder that includes the llm
-    def call_model_with_llm(state: AgentState) -> AgentState:
-        return call_model(state, llm_with_tools)
+    builder = StateGraph(AgentState)
 
     # Add nodes
-    workflow.add_node("call_model", call_model_with_llm)
-    workflow.add_node("web_search", run_web_search)
-    workflow.add_node("final_answer", final_answer)
+    builder.add_node("planner", PlannerNode(llm_with_tools))
+    builder.add_node("web_search", WebSearchNode())
+    builder.add_node("final_answer", FinalAnswerNode())
 
     # Set entry point
-    workflow.set_entry_point("call_model")
+    builder.set_entry_point("planner")
 
     # Add edges
-    workflow.add_conditional_edges("call_model", route_to_tool_or_end)
+    builder.add_conditional_edges("planner", route_to_tool_or_end)
 
-    # Add edge from web_search back to call_model
-    workflow.add_edge("web_search", "call_model")
+    # Add edge from web_search back to planner
+    builder.add_edge("web_search", "planner")
 
     # Add edge from final_answer to END
-    workflow.add_edge("final_answer", END)
+    builder.add_edge("final_answer", END)
 
     logger.debug("Compiling research agent graph")
     # Compile the graph
-    return workflow.compile()
+    return builder.compile()
 
 
 def format_research_report(state: AgentState) -> str:
