@@ -15,29 +15,6 @@ configure_logging()
 logger = get_logger(__name__)
 
 
-class MockTool:
-    """A mock tool for graph visualization purposes."""
-
-    def __init__(self, name: str = "mock_tool"):
-        self.name = name
-
-    def __call__(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
-        """Mock implementation that returns an empty result."""
-        return {"result": "This is a mock tool response for visualization purposes."}
-
-
-class MockLLM:
-    """A mock LLM for graph visualization purposes."""
-
-    def invoke(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:
-        """Mock invocation that returns an empty result."""
-        return {"content": "This is a mock LLM response for visualization purposes."}
-
-    def bind_tools(self, tools: List[Any]) -> Any:
-        """Mock tool binding that returns self."""
-        return self
-
-
 def get_research_graph() -> Any:
     """
     Returns the research agent graph for visualization in LangGraph Studio.
@@ -50,10 +27,7 @@ def get_research_graph() -> Any:
     """
     logger.info("Building research agent graph for LangGraph Studio")
 
-    # Create mock tools for visualization
-    # mock_tools = [MockTool(name="web_search")]
-
-    # Build the research agent graph with mock implementations
+    # Build the research agent graph
     graph = build_research_agent()
 
     return graph

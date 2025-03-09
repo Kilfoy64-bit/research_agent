@@ -18,6 +18,7 @@ dependencies = [
     "dotenv",
     "python-dotenv",
     "langchain-openai>=0.0.1",
+    "dependency-injector",
 ]
 
 [project.optional-dependencies]

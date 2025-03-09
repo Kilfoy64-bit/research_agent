@@ -1,43 +1,68 @@
 """
-Language model setup and mock responses for the research agent.
+LLM setup for the research agent.
+
+This module sets up language models with dependency injection for the research agent.
 """
 
 import os
-from typing import List, Any, Dict, Optional
+from typing import Any, List, Optional, Dict
 
+from dependency_injector import containers, providers
 from langchain_openai import ChatOpenAI
-
-from langchain_core.messages import AIMessage
+from langchain_core.language_models import BaseChatModel
 from langchain_core.tools import BaseTool
 
+from src.utils.config import AgentConfig, ModelProvider
 from src.utils.logging import get_logger
 
 # Get logger for this module
 logger = get_logger(__name__)
 
 
-def setup_llm(tools: List[BaseTool]) -> Optional[Any]:
-    """Set up the language model with tools.
+class LLMContainer(containers.DeclarativeContainer):
+    """Container for LLM providers."""
+
+    # Import configuration
+    config = providers.Dependency(AgentConfig)
+
+    # OpenAI model providers
+    planner_model = providers.Factory(
+        ChatOpenAI,
+        model=providers.Callable(lambda config: config.planner_model, config=config),
+        temperature=0,
+    )
+
+    writer_model = providers.Factory(
+        ChatOpenAI,
+        model=providers.Callable(
+            lambda config: config.report_writer_model, config=config
+        ),
+        temperature=0,
+    )
+
+
+def setup_container(config: Optional[AgentConfig] = None) -> LLMContainer:
+    """Set up the LLM container with configuration.
 
     Args:
-        tools: List of tools to bind to the LLM
+        config: Optional agent configuration
 
     Returns:
-        LLM with tools bound, or None if using mock responses
+        Configured LLM container
     """
-    logger.info("Using OpenAI for LLM")
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        logger.error("OPENAI_API_KEY environment variable not set")
-        return None
+    if config is None:
+        from src.utils.config import default_config
 
-    logger.debug(
-        f"Using API key: {api_key[:5]}...{api_key[-4:] if len(api_key) > 9 else ''}"
-    )
+        config = default_config
 
-    llm = ChatOpenAI(
-        api_key=api_key,
-        model="gpt-4o",
-        temperature=0.1,
-    )
-    return llm.bind_tools(tools)
+    # Create and configure container
+    container = LLMContainer()
+    container.config.override(config)
+
+    # Check if OpenAI API key is set
+    if not os.environ.get("OPENAI_API_KEY"):
+        logger.warning("OPENAI_API_KEY environment variable not set")
+    else:
+        logger.info("OpenAI API key found")
+
+    return container
